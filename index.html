@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For you, my love ♡</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#120b1f">
+<meta property="og:title" content="Something is waiting for you ♡">
+<meta property="og:description" content="Opens at midnight · November 29">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rose:#f4a7b9; --rose-deep:#e46a8c; --gold:#f6d7a7;
+    --ink:#fbeff2; --muted:rgba(251,239,242,.62); --line:rgba(244,167,185,.22);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    min-height:100svh; color:var(--ink);
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif; font-weight:300;
+    background:
+      radial-gradient(ellipse 90% 55% at 50% 115%, rgba(228,106,140,.35) 0%, transparent 70%),
+      linear-gradient(180deg,#0b0716 0%,#170e27 55%,#2a1236 100%);
+    background-attachment:fixed;
+    overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  }
+  canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+  #sky{z-index:0} #fx{z-index:5}
+
+  .stage{position:relative;z-index:2;min-height:100svh;display:grid;place-items:center;
+    padding:max(32px,env(safe-area-inset-top)) 20px max(32px,env(safe-area-inset-bottom))}
+
+  .serif{font-family:"Cormorant Garamond",Georgia,serif}
+  .eyebrow{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--rose);font-weight:400}
+
+  /* ---------- Locked ---------- */
+  .locked{width:100%;max-width:560px;text-align:center;transition:opacity .9s ease, transform .9s ease, filter .9s ease}
+  .locked.leaving{opacity:0;transform:scale(.96);filter:blur(6px)}
+  .lock{width:68px;height:76px;color:var(--rose);margin:0 auto 26px;display:block;
+    filter:drop-shadow(0 0 18px rgba(244,167,185,.45));animation:breathe 3.2s ease-in-out infinite}
+  .lock .shackle{transform-box:view-box;transform-origin:46px 32px;transition:transform .8s cubic-bezier(.3,1.6,.5,1)}
+  .lock.open .shackle{transform:translateY(-7px) rotate(-22deg)}
+  .lock.open{animation:none;filter:drop-shadow(0 0 34px rgba(246,215,167,.9));color:var(--gold);transition:color .6s, filter .6s}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+  h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;font-style:italic;
+    font-size:clamp(34px,8.4vw,58px);line-height:1.08;margin:14px 0 30px;letter-spacing:-.01em}
+
+  .countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2.4vw,14px);margin:0 auto 26px}
+  .unit{border:1px solid var(--line);border-radius:18px;padding:18px 4px 13px;
+    background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .num{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;
+    font-size:clamp(38px,11vw,64px);line-height:1;font-variant-numeric:lining-nums tabular-nums}
+  .num.tick{animation:tick .45s ease-out}
+  @keyframes tick{from{opacity:.25;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .lbl{display:block;margin-top:8px;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+  .when{font-size:14px;color:var(--muted);line-height:1.7}
+  .when b{color:var(--ink);font-weight:400}
+  .hint{margin-top:26px;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:18px;color:var(--rose);opacity:.85}
+  .loading .countdown, .loading .when{opacity:0}
+  .countdown,.when{transition:opacity .5s}
+
+  /* ---------- Revealed ---------- */
+  .revealed{width:100%;max-width:720px;text-align:center}
+  .revealed > *{opacity:0;transform:translateY(18px);animation:rise 1s cubic-bezier(.2,.8,.2,1) forwards}
+  .revealed > *:nth-child(1){animation-delay:.1s}
+  .revealed > *:nth-child(2){animation-delay:.35s}
+  .revealed > *:nth-child(3){animation-delay:.6s}
+  .revealed > *:nth-child(4){animation-delay:.95s}
+  .revealed > *:nth-child(5){animation-delay:1.25s}
+  .revealed > *:nth-child(6){animation-delay:1.5s}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  .big{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-height:1;font-variant-numeric:lining-nums;
+    font-size:clamp(46px,12vw,92px);margin:14px 0 8px;letter-spacing:-.015em;
+    background:linear-gradient(100deg,var(--gold) 0%,#fff3e6 35%,var(--rose) 70%,var(--gold) 100%);
+    background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:rise 1s cubic-bezier(.2,.8,.2,1) forwards, shimmer 6s linear 1.5s infinite}
+  .big i{font-style:italic;font-weight:400}
+  @keyframes shimmer{to{background-position:200% center}}
+  .dates{font-size:13px;letter-spacing:.28em;color:var(--muted);margin-bottom:34px}
+  .dates span{color:var(--rose);margin:0 .6em}
+
+  .video{position:relative;display:block;width:100%;aspect-ratio:16/9;border-radius:20px;overflow:hidden;
+    border:1px solid var(--line);background:#000;cursor:pointer;padding:0;color:inherit;font:inherit;
+    box-shadow:0 30px 80px -20px rgba(228,106,140,.55),0 0 0 6px rgba(255,255,255,.03)}
+  .video img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s ease, filter .6s}
+  .video::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(11,7,22,.75))}
+  .video:hover img,.video:focus-visible img{transform:scale(1.04);filter:brightness(1.08)}
+  .play{position:absolute;z-index:2;left:50%;top:50%;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;
+    display:grid;place-items:center;background:rgba(255,255,255,.92);color:var(--rose-deep);
+    box-shadow:0 0 0 0 rgba(255,255,255,.55);animation:ping 2.2s ease-out infinite}
+  .play svg{width:30px;height:30px;margin-left:5px}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,255,255,.5)}100%{box-shadow:0 0 0 26px rgba(255,255,255,0)}}
+  .video .cap{position:absolute;z-index:2;left:0;right:0;bottom:16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase}
+  .video.playing{cursor:default}
+  .video.playing::after{display:none}
+  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .video.empty{display:grid;place-items:center;cursor:default;background:rgba(255,255,255,.04)}
+  .video.empty::after{display:none}
+
+  .yt{display:inline-block;margin-top:16px;font-size:13px;color:var(--muted);text-decoration:none;
+    border-bottom:1px solid var(--line);padding-bottom:2px}
+  .yt:hover{color:var(--ink)}
+
+  .letter{margin:44px auto 0;max-width:520px;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;
+    font-size:clamp(19px,4.6vw,23px);line-height:1.65;white-space:pre-line;color:#f7e4ea}
+  .sign{margin-top:22px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--rose)}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<canvas id="fx"></canvas>
+
+<main class="stage" id="stage">
+  <section class="locked loading" id="locked" aria-live="polite">
+    <svg class="lock" id="lock" viewBox="0 0 64 76" aria-hidden="true">
+      <path class="shackle" d="M18 32V22a14 14 0 0 1 28 0v10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+      <rect x="8" y="30" width="48" height="42" rx="11" fill="currentColor"/>
+      <path d="M32 61s-9.5-5.8-9.5-11.8A5 5 0 0 1 32 46.3a5 5 0 0 1 9.5 2.9C41.5 55.2 32 61 32 61z" fill="#1a0f2a"/>
+    </svg>
+    <p class="eyebrow" id="forName">For my love</p>
+    <h1>Something is waiting<br>for you</h1>
+
+    <div class="countdown" role="timer" aria-label="Time until it opens">
+      <div class="unit"><span class="num" id="d">0</span><span class="lbl">Days</span></div>
+      <div class="unit"><span class="num" id="h">00</span><span class="lbl">Hours</span></div>
+      <div class="unit"><span class="num" id="m">00</span><span class="lbl">Minutes</span></div>
+      <div class="unit"><span class="num" id="s">00</span><span class="lbl">Seconds</span></div>
+    </div>
+
+    <p class="when" id="when"></p>
+    <p class="hint">Don't peek — come back at midnight ♡</p>
+  </section>
+</main>
+
+<script>
+/* =====================================================================
+   ✏️  여기만 수정하세요 (EDIT HERE)
+   ===================================================================== */
+const CONFIG = {
+  // 열리는 시각: 세부(필리핀, UTC+8) 11월 29일 00:00  = 한국시간 01:00
+  UNLOCK_AT: "2026-11-29T00:00:00+08:00",
+
+  // 처음 알게 된 날 (기념일 계산용)  ※ 사귄 날: 2026-02-07
+  START_DATE: "2025-11-29",
+
+  // 유튜브 링크 또는 영상 ID. (예: "https://youtu.be/abcdEFGhijk")
+  // 소스보기로 들키지 않게 하려면 "enc:..." 형태로 넣으세요 (README 참고).
+  VIDEO: "",
+
+  HER_NAME: "my love",
+  FROM: "",           // 예: "Yours, Minjun"
+
+  MESSAGE: `One year ago today,
+an unexpected first call
+became my favorite part of every day.
+
+We're far apart for now,
+but I keep dreaming of the day
+we won't need a screen to say good night.
+
+After the rain, the sun always comes out.
+
+I love you Gle. 사랑해.`
+};
+/* ===================================================================== */
+
+(() => {
+  const $ = id => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- trusted clock (server Date header beats a fiddled phone clock) ---------- */
+  let offset = 0;
+  const now = () => Date.now() + offset;
+  async function syncClock() {
+    if (location.protocol === 'file:') return;
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 2500);
+      const t0 = Date.now();
+      const res = await fetch(location.pathname + '?_t=' + t0, { method: 'HEAD', cache: 'no-store', signal: ctrl.signal });
+      const t1 = Date.now();
+      clearTimeout(timer);
+      const server = Date.parse(res.headers.get('date') || '');
+      if (!isNaN(server)) {
+        const o = server + 500 + (t1 - t0) / 2 - t1;   // Date header is second-precision
+        offset = Math.abs(o) > 5000 ? o : 0;          // only correct clocks that are clearly wrong
+      }
+    } catch (e) { /* offline or blocked: fall back to device clock */ }
+  }
+
+  /* ---------- target time (+ private preview for you) ---------- */
+  let unlockAt = Date.parse(CONFIG.UNLOCK_AT);
+  const preview = params.get('preview');          // ?preview=now  or  ?preview=10  (seconds)
+  if (preview === 'now') unlockAt = Date.now() - 1000;
+  else if (preview && /^\d+$/.test(preview)) unlockAt = Date.now() + (+preview) * 1000;
+
+  const startAt = Date.parse(CONFIG.START_DATE + 'T00:00:00+08:00');
+  const daysTogether = Math.round((Date.parse(CONFIG.UNLOCK_AT) - startAt) / 864e5);
+
+  /* ---------- labels ---------- */
+  $('forName').textContent = 'For ' + CONFIG.HER_NAME;
+  const fmt = (opts) => new Intl.DateTimeFormat('en-US', opts).format(new Date(Date.parse(CONFIG.UNLOCK_AT)));
+  const cebu = fmt({ timeZone: 'Asia/Manila', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  $('when').innerHTML = `Opens <b>${cebu}</b> · Philippine time`;
+
+  /* ---------- countdown ---------- */
+  const els = { d: $('d'), h: $('h'), m: $('m'), s: $('s') };
+  const last = {};
+  function setNum(k, v) {
+    if (last[k] === v) return;
+    last[k] = v;
+    const el = els[k];
+    el.textContent = v;
+    el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick');
+  }
+  let unlocked = false, loop;
+  function render() {
+    const diff = unlockAt - now();
+    if (diff <= 0) { if (!unlocked) unlock(); return; }
+    const t = Math.floor(diff / 1000);
+    setNum('d', String(Math.floor(t / 86400)));
+    setNum('h', String(Math.floor(t % 86400 / 3600)).padStart(2, '0'));
+    setNum('m', String(Math.floor(t % 3600 / 60)).padStart(2, '0'));
+    setNum('s', String(t % 60).padStart(2, '0'));
+  }
+
+  /* ---------- video helpers ---------- */
+  function decode(v) {
+    v = (v || '').trim();
+    if (v.startsWith('enc:')) { try { v = atob(v.slice(4)).split('').reverse().join(''); } catch (e) { v = ''; } }
+    return v;
+  }
+  function ytId(raw) {
+    const v = decode(raw);
+    if (!v) return '';
+    if (/^[\w-]{11}$/.test(v)) return v;
+    try {
+      const u = new URL(v);
+      if (u.hostname.includes('youtu.be')) return u.pathname.slice(1, 12);
+      if (u.searchParams.get('v')) return u.searchParams.get('v');
+      const m = u.pathname.match(/\/(embed|shorts|live)\/([\w-]{11})/);
+      if (m) return m[2];
+    } catch (e) {}
+    return '';
+  }
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  /* ---------- the reveal (built only after unlock — nothing hidden in the page before) ---------- */
+  function unlock() {
+    unlocked = true;
+    clearInterval(loop);
+    ['d', 'h', 'm', 's'].forEach(k => setNum(k, k === 'd' ? '0' : '00'));
+    $('lock').classList.add('open');
+    setTimeout(() => { burst(); $('locked').classList.add('leaving'); }, reduceMotion ? 0 : 700);
+    setTimeout(showReveal, reduceMotion ? 0 : 1500);
+  }
+
+  function showReveal() {
+    const id = ytId(CONFIG.VIDEO);
+    const s = new Date(startAt), e = new Date(Date.parse(CONFIG.UNLOCK_AT));
+    const d = x => `${String(x.getUTCMonth() + 1).padStart(2, '0')}.${String(x.getUTCDate()).padStart(2, '0')}.${x.getUTCFullYear()}`;
+    // dates are midnight UTC+8 → shift 8h so UTC getters give the Cebu calendar date
+    const sd = new Date(s.getTime() + 8 * 3600e3), ed = new Date(e.getTime() + 8 * 3600e3);
+
+    const video = id
+      ? `<button class="video" id="video" aria-label="Play our video">
+           <img id="thumb" alt="" src="https://i.ytimg.com/vi/${id}/maxresdefault.jpg">
+           <span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></span>
+           <span class="cap">Press play ♡</span>
+         </button>
+         <a class="yt" href="https://youtu.be/${id}" target="_blank" rel="noopener">Open in YouTube ↗</a>`
+      : `<div class="video empty"><p class="serif" style="font-size:22px;font-style:italic;color:var(--muted)">(video coming soon ♡)</p></div>`;
+
+    $('stage').innerHTML = `
+      <section class="revealed">
+        <p class="eyebrow">For ${esc(CONFIG.HER_NAME)} · Day ${daysTogether}</p>
+        <h2 class="big">One Year<br><i>since we met</i></h2>
+        <p class="dates">${d(sd)}<span>♡</span>${d(ed)}</p>
+        <div>${video}</div>
+        <p class="letter">${esc(CONFIG.MESSAGE)}</p>
+        ${CONFIG.FROM ? `<p class="sign">${esc(CONFIG.FROM)}</p>` : ''}
+      </section>`;
+    window.scrollTo(0, 0);
+
+    const thumb = $('thumb');
+    if (thumb) {
+      const fallback = () => { if (!thumb.dataset.fb) { thumb.dataset.fb = 1; thumb.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`; } };
+      thumb.addEventListener('error', fallback);
+      thumb.addEventListener('load', () => { if (thumb.naturalWidth <= 120) fallback(); });
+    }
+    const v = $('video');
+    if (v) v.addEventListener('click', () => {
+      v.classList.add('playing');
+      v.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1&modestbranding=1"
+        title="Our video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    }, { once: true });
+  }
+
+  /* ---------- starry sky ---------- */
+  const sky = $('sky'), sctx = sky.getContext('2d');
+  const fx = $('fx'), fctx = fx.getContext('2d');
+  let W, H, DPR, stars = [];
+  function resize() {
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    for (const c of [sky, fx]) { c.width = W * DPR; c.height = H * DPR; c.getContext('2d').setTransform(DPR, 0, 0, DPR, 0, 0); }
+    const n = Math.round(W * H / 6000);
+    stars = Array.from({ length: n }, () => ({
+      x: Math.random() * W, y: Math.random() * H * .85, r: Math.random() * 1.2 + .25,
+      p: Math.random() * Math.PI * 2, sp: .6 + Math.random() * 1.6
+    }));
+  }
+  function drawSky(t) {
+    sctx.clearRect(0, 0, W, H);
+    for (const s of stars) {
+      const a = reduceMotion ? .7 : .35 + .65 * (0.5 + 0.5 * Math.sin(s.p + t / 1000 * s.sp));
+      sctx.globalAlpha = a;
+      sctx.fillStyle = '#fff6f8';
+      sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); sctx.fill();
+    }
+    sctx.globalAlpha = 1;
+  }
+
+  /* ---------- heart burst ---------- */
+  let hearts = [];
+  const colors = ['#f4a7b9', '#e46a8c', '#f6d7a7', '#ffffff', '#ffc2d1'];
+  function heartPath(c, x, y, s, rot) {
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s);
+    c.beginPath();
+    c.moveTo(0, -.3);
+    c.bezierCurveTo(0, -.6, -.5, -.6, -.5, -.3);
+    c.bezierCurveTo(-.5, 0, 0, .2, 0, .45);
+    c.bezierCurveTo(0, .2, .5, 0, .5, -.3);
+    c.bezierCurveTo(.5, -.6, 0, -.6, 0, -.3);
+    c.fill(); c.restore();
+  }
+  function burst() {
+    if (reduceMotion) return;
+    const cx = W / 2, cy = H * .42;
+    for (let i = 0; i < 110; i++) {
+      const a = Math.random() * Math.PI * 2, v = 3 + Math.random() * 9;
+      hearts.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 4, s: 10 + Math.random() * 18,
+        rot: Math.random() - .5, vr: (Math.random() - .5) * .15, life: 1, c: colors[i % colors.length] });
+    }
+    // gentle rain afterwards
+    let n = 0; const rain = setInterval(() => {
+      if (++n > 40) return clearInterval(rain);
+      hearts.push({ x: Math.random() * W, y: -20, vx: (Math.random() - .5), vy: 1 + Math.random() * 2, s: 8 + Math.random() * 12,
+        rot: Math.random() - .5, vr: (Math.random() - .5) * .05, life: 1, c: colors[n % colors.length], slow: true });
+    }, 120);
+  }
+  function drawFx() {
+    fctx.clearRect(0, 0, W, H);
+    hearts = hearts.filter(h => h.life > 0 && h.y < H + 40);
+    for (const h of hearts) {
+      h.x += h.vx; h.y += h.vy; h.rot += h.vr;
+      if (h.slow) { h.vy = Math.min(h.vy + .01, 2.4); h.life -= .0025; }
+      else { h.vx *= .985; h.vy = h.vy * .985 + .18; h.life -= .007; }
+      fctx.globalAlpha = Math.max(0, Math.min(1, h.life * 1.4));
+      fctx.fillStyle = h.c;
+      heartPath(fctx, h.x, h.y, h.s, h.rot);
+    }
+    fctx.globalAlpha = 1;
+  }
+
+  function frame(t) { drawSky(t); drawFx(); requestAnimationFrame(frame); }
+
+  /* ---------- go ---------- */
+  addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(frame);
+
+  syncClock().then(() => {
+    $('locked').classList.remove('loading');
+    render();
+    if (!unlocked) loop = setInterval(render, 250);
+  });
+  // if she switches apps / changes the phone clock, re-check against the server
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !unlocked) syncClock().then(render); });
+})();
+</script>
+</body>
+</html>
