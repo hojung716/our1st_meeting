@@ -240,6 +240,8 @@ I love you Gle. 사랑해.`,
     { src: "images/flower-3.jpg", name: "Tulip",          pos: "42% 50%" },
   ],
   FIELD_IMAGE: "images/field.jpg",
+  // 유튜브 썸네일이 없을 때 대신 보여줄 영상 표지
+  POSTER: "images/field.jpg",
 };
 /* ===================================================================== */
 
@@ -428,7 +430,13 @@ I love you Gle. 사랑해.`,
 
     const thumb = $('thumb');
     if (thumb) {
-      const fallback = () => { if (!thumb.dataset.fb) { thumb.dataset.fb = 1; thumb.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`; } };
+      // maxres → hq → our own cover photo (if YouTube hasn't made a thumbnail yet)
+      const fallback = () => {
+        const step = +(thumb.dataset.fb || 0);
+        if (step >= 2) return;
+        thumb.dataset.fb = step + 1;
+        thumb.src = step === 0 ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : CONFIG.POSTER;
+      };
       thumb.addEventListener('error', fallback);
       thumb.addEventListener('load', () => { if (thumb.naturalWidth <= 120) fallback(); });
     }
@@ -461,7 +469,9 @@ I love you Gle. 사랑해.`,
     const r = $('lock').getBoundingClientRect();
     const x1 = r.left + r.width / 2, y1 = r.top + r.height * .6;   // the keyhole-ish heart
     const x0 = -90, y0 = y1 - Math.min(150, H * .17);
-    comet = { t0: performance.now(), dur: 1600, x0, y0, x1, y1, lx: x0, ly: y0, onHit };
+    const c = comet = { t0: performance.now(), dur: 1600, x0, y0, x1, y1, lx: x0, ly: y0, onHit };
+    // safety net: if animation frames are paused (tab in background), still open the lock
+    setTimeout(() => { if (comet === c) { comet = null; onHit && onHit(); } }, c.dur + 1200);
   }
   function impact(x, y) {
     const cols = ['#fff6d8', '#f6d7a7', '#ffffff', '#ffd1dc'];
@@ -639,7 +649,10 @@ I love you Gle. 사랑해.`,
   function launchFirework(onBoom) {
     if (reduceMotion) { onBoom && onBoom(); return; }
     const x0 = W / 2, y0 = H + 10;
-    rockets.push({ t0: performance.now(), dur: 2000, x0, y0, y1: H * .24, amp: Math.min(W * .08, 42), lx: x0, ly: y0, onBoom });
+    const r = { t0: performance.now(), dur: 2000, x0, y0, y1: H * .24, amp: Math.min(W * .08, 42), lx: x0, ly: y0, onBoom };
+    rockets.push(r);
+    // safety net: if animation frames are paused, still continue
+    setTimeout(() => { if (rockets.includes(r)) { rockets = rockets.filter(x => x !== r); onBoom && onBoom(); } }, r.dur + 1200);
   }
   function explode(x, y) {
     const S = Math.min(W, H) / 420;
