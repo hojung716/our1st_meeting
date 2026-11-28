@@ -28,7 +28,30 @@
     overflow-x:hidden; -webkit-font-smoothing:antialiased;
   }
   canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
-  #sky{z-index:0} #fx{z-index:5}
+  #sky{z-index:0} #fx{z-index:5} #fw{z-index:6}
+
+  /* flower field that rises at the bottom of the screen */
+  .field{position:fixed;left:0;right:0;bottom:0;height:46svh;z-index:1;pointer-events:none;
+    background:center 78%/cover no-repeat;
+    -webkit-mask-image:linear-gradient(to top,#000 42%,transparent);mask-image:linear-gradient(to top,#000 42%,transparent);
+    opacity:0;transform:translateY(60px);filter:brightness(.9) saturate(1.05);
+    transition:opacity 2.4s ease, transform 2.6s cubic-bezier(.2,.8,.2,1)}
+  .field.show{opacity:1;transform:none}
+
+  /* 🎉 party poppers in the bottom corners */
+  .popper{position:fixed;top:calc(50% - 40px);z-index:7;pointer-events:none;
+    font-size:clamp(54px,15vw,84px);line-height:1;opacity:0;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}
+  .popper.l{left:10px} .popper.r{right:10px}
+  .popper .in{display:block}
+  .popper.r .in{transform:scaleX(-1)}
+  .popper.show{animation:popIn .45s cubic-bezier(.3,1.7,.5,1) forwards}
+  .popper.fire .in{animation:recoil .35s ease-out}
+  .popper.r.fire .in{animation:recoilR .35s ease-out}
+  .popper.bye{animation:popOut .8s ease forwards}
+  @keyframes popIn{from{opacity:0;transform:translateY(40px) scale(.4)}to{opacity:1;transform:none}}
+  @keyframes popOut{from{opacity:1}to{opacity:0;transform:translateY(30px) scale(.8)}}
+  @keyframes recoil{0%{transform:none}30%{transform:translate(-6px,8px) scale(.9) rotate(-8deg)}100%{transform:none}}
+  @keyframes recoilR{0%{transform:scaleX(-1)}30%{transform:scaleX(-1) translate(-6px,8px) scale(.9) rotate(-8deg)}100%{transform:scaleX(-1)}}
 
   .stage{position:relative;z-index:2;min-height:100svh;display:grid;place-items:center;
     padding:max(32px,env(safe-area-inset-top)) 20px max(32px,env(safe-area-inset-bottom))}
@@ -65,15 +88,48 @@
   .countdown,.when{transition:opacity .5s}
 
   /* ---------- Revealed ---------- */
-  .revealed{width:100%;max-width:720px;text-align:center}
-  .revealed > *{opacity:0;transform:translateY(18px);animation:rise 1s cubic-bezier(.2,.8,.2,1) forwards}
-  .revealed > *:nth-child(1){animation-delay:.1s}
-  .revealed > *:nth-child(2){animation-delay:.35s}
-  .revealed > *:nth-child(3){animation-delay:.6s}
-  .revealed > *:nth-child(4){animation-delay:.95s}
-  .revealed > *:nth-child(5){animation-delay:1.25s}
-  .revealed > *:nth-child(6){animation-delay:1.5s}
+  .revealed{width:100%;max-width:720px;text-align:center;padding-bottom:26svh}
+  .stagger > *{opacity:0;transform:translateY(18px);animation:rise 1s cubic-bezier(.2,.8,.2,1) forwards}
+  .stagger > *:nth-child(1){animation-delay:.1s}
+  .stagger > *:nth-child(2){animation-delay:.35s}
+  .stagger > *:nth-child(3){animation-delay:.6s}
+  .stagger > *:nth-child(4){animation-delay:.95s}
+  .stagger > *:nth-child(5){animation-delay:1.25s}
+  .stagger > *:nth-child(6){animation-delay:1.5s}
   @keyframes rise{to{opacity:1;transform:none}}
+  .leaving{opacity:0!important;transform:scale(.97)!important;filter:blur(6px);transition:opacity .8s ease, transform .8s ease, filter .8s ease}
+
+  /* ---------- Flower quiz ---------- */
+  .quiz{width:100%;max-width:560px;text-align:center;align-self:start;margin-top:5svh}
+  .quiz h1{margin:12px 0 10px}
+  .quiz .sub{color:var(--muted);font-size:14px;margin-bottom:26px}
+  .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,3vw,18px)}
+  .choice{appearance:none;border:0;background:none;color:inherit;font:inherit;cursor:pointer;padding:0;
+    display:flex;flex-direction:column;align-items:center;gap:10px;transition:opacity .6s, filter .6s, transform .3s}
+  .choice:disabled{cursor:default}
+  .choice .ph{position:relative;width:100%;aspect-ratio:3/4;border-radius:18px;overflow:hidden;
+    border:1px solid var(--line);box-shadow:0 18px 40px -18px rgba(0,0,0,.85);transition:box-shadow .6s, transform .6s}
+  .choice img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s ease}
+  .choice:not(:disabled):hover img,.choice:not(:disabled):focus-visible img{transform:scale(1.07)}
+  .choice .nm{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:clamp(16px,4.3vw,21px);line-height:1.15}
+  .choice.wrong{animation:shake .5s}
+  .choice.wrong .ph::after{content:"✕";position:absolute;inset:0;display:grid;place-items:center;
+    background:rgba(11,7,22,.6);font-size:30px;color:#fff}
+  .choice.right .ph{transform:scale(1.06);box-shadow:0 0 0 3px var(--gold),0 0 60px rgba(246,215,167,.75)}
+  .choices.done .choice:not(.right){opacity:.22;filter:grayscale(1)}
+  @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-8px) rotate(-2deg)}40%{transform:translateX(7px) rotate(2deg)}
+    60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+  .fb{min-height:2em;margin-top:26px;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:22px;color:var(--rose)}
+  .fb .yes{display:block;font-style:normal;font-weight:500;font-size:clamp(40px,11vw,64px);line-height:1.05;
+    background:linear-gradient(100deg,var(--gold),#fff3e6,var(--rose));-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:pop .7s cubic-bezier(.3,1.6,.5,1)}
+  .fb .yes-sub{display:block;margin-top:6px;color:var(--ink);text-shadow:0 2px 14px rgba(0,0,0,.6)}
+  @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+  .next{margin-top:24px;appearance:none;border:1px solid var(--gold);background:rgba(18,11,31,.55);color:var(--ink);
+    border-radius:999px;padding:15px 30px;font:inherit;font-size:13px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 0 30px rgba(246,215,167,.35);
+    opacity:0;transform:translateY(10px);transition:opacity .8s ease, transform .8s ease}
+  .next.show{opacity:1;transform:none}
 
   .big{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;line-height:1;font-variant-numeric:lining-nums;
     font-size:clamp(46px,12vw,92px);margin:14px 0 8px;letter-spacing:-.015em;
@@ -108,17 +164,18 @@
   .yt:hover{color:var(--ink)}
 
   .letter{margin:44px auto 0;max-width:520px;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;
-    font-size:clamp(19px,4.6vw,23px);line-height:1.65;white-space:pre-line;color:#f7e4ea}
+    font-size:clamp(19px,4.6vw,23px);line-height:1.65;white-space:pre-line;color:#f7e4ea;
+    padding:28px 22px;border-radius:22px;border:1px solid var(--line);
+    background:rgba(18,11,31,.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
   .sign{margin-top:22px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--rose)}
 
-  @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-  }
 </style>
 </head>
 <body>
 <canvas id="sky"></canvas>
+<div class="field" id="field" aria-hidden="true"></div>
 <canvas id="fx"></canvas>
+<canvas id="fw"></canvas>
 
 <main class="stage" id="stage">
   <section class="locked loading" id="locked" aria-live="polite">
@@ -155,7 +212,7 @@ const CONFIG = {
 
   // 유튜브 링크 또는 영상 ID. (예: "https://youtu.be/abcdEFGhijk")
   // 소스보기로 들키지 않게 하려면 "enc:..." 형태로 넣으세요 (README 참고).
-  VIDEO: "",
+  VIDEO: "enc:MEdWajdwUVZybWo=",
 
   HER_NAME: "my love",
   FROM: "",           // 예: "Yours, Minjun"
@@ -170,14 +227,27 @@ we won't need a screen to say good night.
 
 After the rain, the sun always comes out.
 
-I love you Gle. 사랑해.`
+I love you Gle. 사랑해.`,
+
+  // 열리자마자 나오는 꽃 퀴즈
+  QUIZ_QUESTION: "What's your<br>favorite flower?",
+  QUIZ_CORRECT: "Correct!",
+  QUIZ_CORRECT_SUB: "Of course I know — my little daisy 🌼",
+  QUIZ_WRONG: ["Hmm… are you sure? 🤔", "Nope! Try again 😝"],
+  FLOWERS: [
+    { src: "images/flower-1.jpg", name: "Daisy",          pos: "50% 58%", correct: true },
+    { src: "images/flower-2.jpg", name: "Cherry Blossom", pos: "45% 50%" },
+    { src: "images/flower-3.jpg", name: "Tulip",          pos: "42% 50%" },
+  ],
+  FIELD_IMAGE: "images/field.jpg",
 };
 /* ===================================================================== */
 
 (() => {
   const $ = id => document.getElementById(id);
   const params = new URLSearchParams(location.search);
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 폭죽·하트 연출이 선물의 핵심이라, 폰의 '동작 줄이기' 설정과 상관없이 항상 재생
+  const reduceMotion = false;
 
   /* ---------- trusted clock (server Date header beats a fiddled phone clock) ---------- */
   let offset = 0;
@@ -261,9 +331,72 @@ I love you Gle. 사랑해.`
     unlocked = true;
     clearInterval(loop);
     ['d', 'h', 'm', 's'].forEach(k => setNum(k, k === 'd' ? '0' : '00'));
-    $('lock').classList.add('open');
-    setTimeout(() => { burst(); $('locked').classList.add('leaving'); }, reduceMotion ? 0 : 700);
-    setTimeout(showReveal, reduceMotion ? 0 : 1500);
+    // preload the quiz photos + flower field while the opening plays
+    CONFIG.FLOWERS.forEach(f => { new Image().src = f.src; });
+    new Image().src = CONFIG.FIELD_IMAGE;
+    // 🌠 a shooting star flies in from the side, hits the lock and opens it → hearts → quiz
+    const hint = document.querySelector('.hint');
+    if (hint) hint.textContent = "It's time ♡";
+    cometToLock(() => {
+      $('lock').classList.add('open');
+      setTimeout(() => { burst(); $('locked').classList.add('leaving'); }, 1200);
+      setTimeout(showQuiz, 2000);
+    });
+  }
+
+  /* ---------- "what's your favorite flower?" ---------- */
+  function showQuiz() {
+    $('stage').innerHTML = `
+      <section class="quiz stagger" id="quiz">
+        <p class="eyebrow">Before your gift…</p>
+        <h1>${CONFIG.QUIZ_QUESTION}</h1>
+        <p class="sub">Pick one, ${esc(CONFIG.HER_NAME)} ♡</p>
+        <div class="choices" id="choices">
+          ${CONFIG.FLOWERS.map((f, i) => `
+            <button class="choice" data-i="${i}">
+              <span class="ph"><img src="${f.src}" alt="${esc(f.name)}" style="object-position:${f.pos}"></span>
+              <span class="nm">${esc(f.name)}</span>
+            </button>`).join('')}
+        </div>
+        <div>
+          <p class="fb" id="fb" aria-live="polite"></p>
+          <button class="next" id="next" hidden>Open your gift ♡</button>
+        </div>
+      </section>`;
+    window.scrollTo(0, 0);
+
+    let tries = 0, solved = false;
+    $('choices').addEventListener('click', e => {
+      const b = e.target.closest('.choice');
+      if (!b || solved || b.disabled) return;
+      const f = CONFIG.FLOWERS[+b.dataset.i];
+      if (!f.correct) {
+        b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong');
+        b.disabled = true;
+        $('fb').textContent = CONFIG.QUIZ_WRONG[tries++ % CONFIG.QUIZ_WRONG.length];
+        return;
+      }
+      solved = true;
+      document.querySelectorAll('.choice').forEach(c => c.disabled = true);
+      b.classList.add('right');
+      $('choices').classList.add('done');
+      $('fb').innerHTML = `<span class="yes">${esc(CONFIG.QUIZ_CORRECT)}</span><span class="yes-sub">${esc(CONFIG.QUIZ_CORRECT_SUB)}</span>`;
+      const field = $('field');
+      field.style.backgroundImage = `url("${CONFIG.FIELD_IMAGE}")`;
+      requestAnimationFrame(() => field.classList.add('show'));
+      launchFirework(() => {
+        partyPoppers();
+        setTimeout(() => {
+          const n = $('next');
+          n.hidden = false;
+          requestAnimationFrame(() => n.classList.add('show'));
+        }, 2600);
+      });
+    });
+    $('next').addEventListener('click', () => {
+      $('quiz').classList.add('leaving');
+      setTimeout(showReveal, reduceMotion ? 0 : 800);
+    });
   }
 
   function showReveal() {
@@ -283,7 +416,7 @@ I love you Gle. 사랑해.`
       : `<div class="video empty"><p class="serif" style="font-size:22px;font-style:italic;color:var(--muted)">(video coming soon ♡)</p></div>`;
 
     $('stage').innerHTML = `
-      <section class="revealed">
+      <section class="revealed stagger">
         <p class="eyebrow">For ${esc(CONFIG.HER_NAME)} · Day ${daysTogether}</p>
         <h2 class="big">One Year<br><i>since we met</i></h2>
         <p class="dates">${d(sd)}<span>♡</span>${d(ed)}</p>
@@ -310,17 +443,81 @@ I love you Gle. 사랑해.`
   /* ---------- starry sky ---------- */
   const sky = $('sky'), sctx = sky.getContext('2d');
   const fx = $('fx'), fctx = fx.getContext('2d');
+  const fw = $('fw'), wctx = fw.getContext('2d');
   let W, H, DPR, stars = [];
   function resize() {
     DPR = Math.min(devicePixelRatio || 1, 2);
     W = innerWidth; H = innerHeight;
-    for (const c of [sky, fx]) { c.width = W * DPR; c.height = H * DPR; c.getContext('2d').setTransform(DPR, 0, 0, DPR, 0, 0); }
+    for (const c of [sky, fx, fw]) { c.width = W * DPR; c.height = H * DPR; c.getContext('2d').setTransform(DPR, 0, 0, DPR, 0, 0); }
     const n = Math.round(W * H / 6000);
     stars = Array.from({ length: n }, () => ({
       x: Math.random() * W, y: Math.random() * H * .85, r: Math.random() * 1.2 + .25,
       p: Math.random() * Math.PI * 2, sp: .6 + Math.random() * 1.6
     }));
   }
+  /* ---------- 🌠 one shooting star flies in from the side and opens the lock ---------- */
+  let comet = null, glints = [], ring = null;
+  function cometToLock(onHit) {
+    const r = $('lock').getBoundingClientRect();
+    const x1 = r.left + r.width / 2, y1 = r.top + r.height * .6;   // the keyhole-ish heart
+    const x0 = -90, y0 = y1 - Math.min(150, H * .17);
+    comet = { t0: performance.now(), dur: 1600, x0, y0, x1, y1, lx: x0, ly: y0, onHit };
+  }
+  function impact(x, y) {
+    const cols = ['#fff6d8', '#f6d7a7', '#ffffff', '#ffd1dc'];
+    for (let i = 0; i < 60; i++) {
+      const a = Math.random() * Math.PI * 2, v = 1.5 + Math.random() * 4.5;
+      glints.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, decay: .018 + Math.random() * .02,
+        r: 1 + Math.random() * 1.8, c: cols[i % cols.length], drag: .94 });
+    }
+    ring = { x, y, r: 6, a: 1 };
+  }
+  function drawComet(now, k) {
+    fctx.globalCompositeOperation = 'lighter';
+    if (comet) {
+      const c = comet;
+      const p = Math.min(1, (now - c.t0) / c.dur);
+      const e = 1 - Math.pow(1 - p, 2.4);                                  // whooshes in, glides onto the lock
+      const x = c.x0 + (c.x1 - c.x0) * e;
+      const y = c.y0 + (c.y1 - c.y0) * e - Math.sin(e * Math.PI) * 22;     // gentle arc
+      let ux = x - c.lx, uy = y - c.ly; const d = Math.hypot(ux, uy);
+      if (d > .01) { ux /= d; uy /= d; c.ux = ux; c.uy = uy; } else { ux = c.ux || 1; uy = c.uy || 0; }
+      c.lx = x; c.ly = y;
+      const len = 260 * (1 - p * .55), rad = 3.6;
+      const tx = x - ux * len, ty = y - uy * len;
+      const g = fctx.createLinearGradient(x, y, tx, ty);
+      g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(.2, 'rgba(255,226,190,.55)'); g.addColorStop(1, 'rgba(255,190,210,0)');
+      fctx.fillStyle = g;
+      fctx.beginPath(); fctx.moveTo(x - uy * rad, y + ux * rad); fctx.lineTo(x + uy * rad, y - ux * rad); fctx.lineTo(tx, ty); fctx.closePath(); fctx.fill();
+      const R = 20;
+      const h = fctx.createRadialGradient(x, y, 0, x, y, R);
+      h.addColorStop(0, 'rgba(255,255,255,1)'); h.addColorStop(.3, 'rgba(255,228,180,.55)'); h.addColorStop(1, 'rgba(255,228,180,0)');
+      fctx.fillStyle = h; fctx.beginPath(); fctx.arc(x, y, R, 0, Math.PI * 2); fctx.fill();
+      // stardust falling off the tail
+      for (let i = 0; i < 2; i++) glints.push({ x: x - ux * Math.random() * 30, y: y - uy * Math.random() * 30,
+        vx: -ux * .6 + (Math.random() - .5) * .8, vy: -uy * .6 + (Math.random() - .5) * .8 + .15,
+        life: 1, decay: .025 + Math.random() * .03, r: .7 + Math.random() * 1.3, c: Math.random() < .5 ? '#fff6d8' : '#ffd1dc', drag: .98 });
+      if (p >= 1) { comet = null; impact(x, y); c.onHit && c.onHit(); }
+    }
+    glints = glints.filter(s => s.life > 0);
+    for (const s of glints) {
+      const dr = Math.pow(s.drag, k);
+      s.vx *= dr; s.vy = s.vy * dr + .03 * k; s.x += s.vx * k; s.y += s.vy * k; s.life -= s.decay * k;
+      fctx.globalAlpha = Math.max(0, s.life) * (.55 + .45 * Math.random());   // twinkly
+      fctx.fillStyle = s.c; fctx.beginPath(); fctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); fctx.fill();
+    }
+    if (ring) {
+      fctx.globalAlpha = Math.max(0, ring.a); fctx.strokeStyle = '#fff1d6'; fctx.lineWidth = 2;
+      fctx.beginPath(); fctx.arc(ring.x, ring.y, ring.r, 0, Math.PI * 2); fctx.stroke();
+      const gl = fctx.createRadialGradient(ring.x, ring.y, 0, ring.x, ring.y, 90);
+      gl.addColorStop(0, `rgba(255,236,200,${.5 * ring.a})`); gl.addColorStop(1, 'rgba(255,236,200,0)');
+      fctx.globalAlpha = 1; fctx.fillStyle = gl; fctx.beginPath(); fctx.arc(ring.x, ring.y, 90, 0, Math.PI * 2); fctx.fill();
+      ring.r += 4.5 * k; ring.a -= .035 * k; if (ring.a <= 0) ring = null;
+    }
+    fctx.globalAlpha = 1;
+    fctx.globalCompositeOperation = 'source-over';
+  }
+
   function drawSky(t) {
     sctx.clearRect(0, 0, W, H);
     for (const s of stars) {
@@ -360,8 +557,71 @@ I love you Gle. 사랑해.`
         rot: Math.random() - .5, vr: (Math.random() - .5) * .05, life: 1, c: colors[n % colors.length], slow: true });
     }, 120);
   }
-  function drawFx() {
+  /* ---------- 🎉 party poppers + confetti ---------- */
+  let confetti = [], lastFx = 0;
+  const confColors = ['#f4a7b9', '#e46a8c', '#f6d7a7', '#ffd27a', '#ffffff', '#a7d8f4', '#c9b6ff', '#9be3b5'];
+  function shootConfetti(side) {
+    const left = side === 'l', S = H / 812;
+    const x0 = left ? 50 : W - 50, y0 = H * .5 - 20;                   // fired from the middle of each side
+    for (let i = 0; i < 95; i++) {
+      const ang = (-48 + (Math.random() - .5) * 44) * Math.PI / 180;     // up and inward
+      const v = (10 + Math.random() * 10) * S;
+      const r = Math.random();
+      confetti.push({
+        x: x0, y: y0, vx: Math.cos(ang) * v * (left ? 1 : -1), vy: Math.sin(ang) * v,
+        shape: r < .55 ? 'rect' : r < .8 ? 'ribbon' : 'dot',
+        w: 5 + Math.random() * 5, h: 9 + Math.random() * 8,
+        rot: Math.random() * 6.3, vr: (Math.random() - .5) * .3,
+        tilt: Math.random() * 6.3, vt: .08 + Math.random() * .12,
+        wob: Math.random() * 6.3, maxFall: 1.4 + Math.random() * 1.8,
+        c: confColors[(Math.random() * confColors.length) | 0], life: 1, age: 0
+      });
+    }
+  }
+  function partyPoppers() {
+    const make = side => {
+      const el = document.createElement('div');
+      el.className = 'popper ' + side; el.innerHTML = '<span class="in">🎉</span>';
+      document.body.appendChild(el); return el;
+    };
+    const L = make('l'), R = make('r');
+    requestAnimationFrame(() => { L.classList.add('show'); R.classList.add('show'); });
+    const fire = (el, side) => { el.classList.remove('fire'); void el.offsetWidth; el.classList.add('fire'); shootConfetti(side); };
+    // pops spread over ~6 seconds
+    [[350, 'lr'], [1300, 'l'], [1700, 'r'], [2900, 'lr'], [4100, 'l'], [4500, 'r']].forEach(([t, s]) =>
+      setTimeout(() => { if (s.includes('l')) fire(L, 'l'); if (s.includes('r')) fire(R, 'r'); }, t));
+    setTimeout(() => { L.classList.add('bye'); R.classList.add('bye'); }, 6000);
+    setTimeout(() => { L.remove(); R.remove(); }, 7000);
+  }
+  function drawConfetti(k) {
+    confetti = confetti.filter(p => p.life > 0 && p.y < H + 40);
+    for (const p of confetti) {
+      p.age += k;
+      const drag = Math.pow(.965, k);
+      p.vx *= drag;
+      p.vy = p.vy * drag + .32 * k;
+      if (p.vy > p.maxFall) p.vy = p.maxFall;                               // flutter down slowly
+      p.wob += .07 * k; p.tilt += p.vt * k; p.rot += p.vr * k;
+      p.x += (p.vx + (p.vy > 0 ? Math.sin(p.wob) * .9 : 0)) * k;
+      p.y += p.vy * k;
+      if (p.age > 330) p.life -= .012 * k;                                  // fade after ~5.5s
+      fctx.save();
+      fctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+      fctx.translate(p.x, p.y); fctx.rotate(p.rot);
+      fctx.fillStyle = fctx.strokeStyle = p.c;
+      if (p.shape === 'rect') { fctx.scale(1, Math.cos(p.tilt)); fctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
+      else if (p.shape === 'dot') { fctx.beginPath(); fctx.arc(0, 0, p.w * .45, 0, Math.PI * 2); fctx.fill(); }
+      else { fctx.lineWidth = 2.4; fctx.lineCap = 'round'; fctx.beginPath(); fctx.moveTo(-p.h * .6, 0);
+             fctx.bezierCurveTo(-p.h * .2, -5 * Math.cos(p.tilt), p.h * .2, 5 * Math.cos(p.tilt), p.h * .6, 0); fctx.stroke(); }
+      fctx.restore();
+    }
+  }
+
+  function drawFx(now) {
+    const k = Math.max(.25, Math.min(3, (now - (lastFx || now)) / 16.67 || 1)); lastFx = now;
     fctx.clearRect(0, 0, W, H);
+    if (comet || glints.length || ring) drawComet(now, k);
+    drawConfetti(k);
     hearts = hearts.filter(h => h.life > 0 && h.y < H + 40);
     for (const h of hearts) {
       h.x += h.vx; h.y += h.vy; h.rot += h.vr;
@@ -374,7 +634,95 @@ I love you Gle. 사랑해.`
     fctx.globalAlpha = 1;
   }
 
-  function frame(t) { drawSky(t); drawFx(); requestAnimationFrame(frame); }
+  /* ---------- firework: wiggly rocket from the bottom → one big burst ---------- */
+  let rockets = [], sparks = [], flash = null, lastT = 0;
+  function launchFirework(onBoom) {
+    if (reduceMotion) { onBoom && onBoom(); return; }
+    const x0 = W / 2, y0 = H + 10;
+    rockets.push({ t0: performance.now(), dur: 2000, x0, y0, y1: H * .24, amp: Math.min(W * .08, 42), lx: x0, ly: y0, onBoom });
+  }
+  function explode(x, y) {
+    const S = Math.min(W, H) / 420;
+    const gold = ['#fff6d8', '#f6d7a7', '#ffd27a'], rose = ['#ffd1dc', '#f4a7b9', '#ff7fa3'], silver = ['#ffffff', '#fde2ff', '#d9c8ff'];
+    // slow decay = the burst hangs in the sky for ~8–10 seconds, then twinkles out
+    const add = (a, v, c, o = {}) => sparks.push(Object.assign({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, decay: .0017 + Math.random() * .001, c, w: 2.2, g: .016, ph: Math.random() * 6.3 }, o));
+    for (let i = 0; i < 240; i++) add(i / 240 * Math.PI * 2 + Math.random() * .02, (5.6 + Math.random() * 1.8) * S, gold[i % 3], { crk: true }); // big outer ring (crackles later)
+    for (let i = 0; i < 200; i++) add(Math.random() * Math.PI * 2, Math.random() * 5 * S, rose[i % 3], { w: 1.8 });                       // filled middle
+    for (let i = 0; i < 110; i++) add(Math.random() * Math.PI * 2, (7 + Math.random() * 2) * S, silver[i % 3], { w: 1.4, decay: .0014 + Math.random() * .0008 }); // glitter tips
+    flash = { x, y, a: 1 };
+  }
+  function drawFw(now) {
+    const k = Math.max(.25, Math.min(3, (now - (lastT || now)) / 16.67 || 1)); lastT = now;
+    if (!rockets.length && !sparks.length && !flash) { return; }
+    // fade the previous frame → light trails
+    wctx.globalCompositeOperation = 'destination-out';
+    wctx.fillStyle = `rgba(0,0,0,${Math.min(1, .2 * k)})`;
+    wctx.fillRect(0, 0, W, H);
+    wctx.globalCompositeOperation = 'lighter';
+    wctx.lineCap = 'round';
+
+    rockets = rockets.filter(r => {
+      const p = Math.min(1, (now - r.t0) / r.dur);
+      const e = 1 - Math.pow(1 - p, 2.2);
+      const y = r.y0 + (r.y1 - r.y0) * e;
+      const x = r.x0 + Math.sin(p * Math.PI * 6) * r.amp * (1 - p * .55);      // 꾸불꾸불
+      wctx.strokeStyle = 'rgba(255,236,200,.95)'; wctx.lineWidth = 2.6;
+      wctx.beginPath(); wctx.moveTo(r.lx, r.ly); wctx.lineTo(x, y); wctx.stroke();
+      const g = wctx.createRadialGradient(x, y, 0, x, y, 14);
+      g.addColorStop(0, 'rgba(255,255,240,1)'); g.addColorStop(1, 'rgba(255,190,110,0)');
+      wctx.fillStyle = g; wctx.beginPath(); wctx.arc(x, y, 14, 0, Math.PI * 2); wctx.fill();
+      for (let i = 0; i < 3; i++) sparks.push({ x, y, vx: (Math.random() - .5) * 1.4, vy: Math.random() * 1.6 + .4,
+        life: .8, decay: .03 + Math.random() * .02, c: '#ffcf8a', w: 1.4, g: .02 });
+      r.lx = x; r.ly = y;
+      if (p >= 1) { explode(x, y); r.onBoom && r.onBoom(); return false; }
+      return true;
+    });
+
+    sparks = sparks.filter(s => s.life > 0);
+    for (const s of sparks) {
+      const px = s.x, py = s.y, drag = Math.pow(.975, k);
+      s.vx *= drag; s.vy = s.vy * drag + (s.g ?? .045) * k;
+      s.x += s.vx * k; s.y += s.vy * k; s.life -= s.decay * k;
+      if (s.crk && s.life < .55) {                                             // crackle: tiny pops as the ring fades
+        s.crk = false;
+        if (Math.random() < .3) for (let j = 0; j < 5; j++) {
+          const a2 = Math.random() * Math.PI * 2, v2 = .8 + Math.random() * 1.6;
+          sparks.push({ x: s.x, y: s.y, vx: Math.cos(a2) * v2, vy: Math.sin(a2) * v2, life: .9, decay: .014 + Math.random() * .01, c: '#fffbe8', w: 1.2, g: .02 });
+        }
+      }
+      const a = Math.max(0, s.life);
+      if (s.ph !== undefined && s.life < .45) {
+        // fading out: each spark twinkles like glitter, with the odd bright glint
+        s.ph += (.35 + Math.random() * .4) * k;
+        const tw = .5 + .5 * Math.sin(s.ph);
+        wctx.globalAlpha = Math.min(1, (a / .45) * (.15 + tw * 1.1));
+        wctx.fillStyle = s.c;
+        wctx.beginPath(); wctx.arc(s.x, s.y, s.w * .55 + tw * .6, 0, Math.PI * 2); wctx.fill();
+        if (Math.random() < .035 * k) {                                        // glint ✦
+          const r = 3 + Math.random() * 4;
+          wctx.globalAlpha = Math.min(1, a / .45 + .2); wctx.strokeStyle = '#fffdf2'; wctx.lineWidth = 1;
+          wctx.beginPath(); wctx.moveTo(s.x - r, s.y); wctx.lineTo(s.x + r, s.y); wctx.moveTo(s.x, s.y - r); wctx.lineTo(s.x, s.y + r); wctx.stroke();
+        }
+      } else {
+        wctx.globalAlpha = a; wctx.strokeStyle = s.c; wctx.lineWidth = s.w;
+        wctx.beginPath(); wctx.moveTo(px, py); wctx.lineTo(s.x, s.y); wctx.stroke();
+      }
+    }
+    wctx.globalAlpha = 1;
+
+    if (flash) {
+      // soft glow only (the trail canvas accumulates, so keep this faint)
+      const R = Math.min(W, H) * .55;
+      const g = wctx.createRadialGradient(flash.x, flash.y, 0, flash.x, flash.y, R);
+      g.addColorStop(0, `rgba(255,235,205,${.14 * flash.a})`); g.addColorStop(1, 'rgba(255,235,205,0)');
+      wctx.fillStyle = g; wctx.fillRect(0, 0, W, H);
+      flash.a -= .1 * k; if (flash.a <= 0) flash = null;
+    }
+    wctx.globalCompositeOperation = 'source-over';
+    if (!rockets.length && !sparks.length && !flash) wctx.clearRect(0, 0, W, H);
+  }
+
+  function frame(t) { drawSky(t); drawFx(t); drawFw(t); requestAnimationFrame(frame); }
 
   /* ---------- go ---------- */
   addEventListener('resize', resize);
